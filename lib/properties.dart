@@ -23,27 +23,85 @@ class _PropertiesWindowState extends State<PropertiesWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          child: Text(
-            "Properties",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+    //sidebar
+    return Container(
+      color: Colors.white,
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Properties",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        Text(
-          "Selected widget: ${widget.selectedWidget}",
-          style: TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Widget",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
           ),
-        )
-      ],
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Text",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Image",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Button",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Text(
+                    "Editor",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -25,7 +25,6 @@ class MainView extends StatelessWidget {
       title: 'Memeity',
       theme: ThemeData(
         // dark theme
-        colorScheme: ColorScheme.dark(),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 206, 11, 95),
         ),
@@ -39,7 +38,6 @@ class MainView extends StatelessWidget {
             editor,
           ]),
         ),
-        properties,
       ]),
     );
   }
