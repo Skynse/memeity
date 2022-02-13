@@ -12,6 +12,7 @@ enum Tools {
 
 //global variable selectedTool
 
+// ignore: must_be_immutable
 class ToolBar extends StatefulWidget {
   ToolBar({Key? key, this.selectedTool = Tools.none}) : super(key: key);
 
@@ -30,6 +31,9 @@ class _ToolBarState extends State<ToolBar> {
   Widget build(BuildContext context) {
     return Material(
       child: Row(
+        // center contents
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
         // limit
         children: [
           //toggle button with icon
@@ -37,19 +41,19 @@ class _ToolBarState extends State<ToolBar> {
             borderColor: Colors.transparent,
             children: const <Widget>[
               Icon(
-                Icons.text_fields,
+                Icons.text_fields_outlined,
                 size: 30,
               ),
               Icon(
-                Icons.brush,
+                Icons.brush_outlined,
                 size: 30,
               ),
               Icon(
-                Icons.image,
+                Icons.image_search_outlined,
                 size: 30,
               ),
               Icon(
-                Icons.mouse,
+                Icons.mouse_outlined,
                 size: 30,
               )
             ],

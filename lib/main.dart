@@ -14,36 +14,33 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ToolBar toolbar = ToolBar();
-    Editor editor = Editor(toolbar: toolbar);
+    PropertiesWindow properties = PropertiesWindow();
+    Editor editor = Editor(
+      toolbar: toolbar,
+      properties: properties,
+    );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Memeity',
       theme: ThemeData(
         // dark theme
-        brightness: Brightness.dark,
+        colorScheme: ColorScheme.dark(),
         iconTheme: const IconThemeData(
-          color: Colors.white,
+          color: Color.fromARGB(255, 206, 11, 95),
         ),
         primarySwatch: Colors.grey,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Column(children: <Widget>[
-        const TitleBar(),
-        toolbar, //make it possible to interact between toolbar and editor
-        editor,
+      home: Row(children: [
+        Expanded(
+          child: Column(children: <Widget>[
+            toolbar,
+            editor,
+          ]),
+        ),
+        properties,
       ]),
-    );
-  }
-}
-
-class TitleBar extends StatelessWidget {
-  const TitleBar({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Column(),
     );
   }
 }
