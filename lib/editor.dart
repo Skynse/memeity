@@ -32,6 +32,8 @@ class _EditorState extends State<Editor> {
     return Expanded(
       child: SizedBox(
         child: InteractiveViewer(
+          minScale: 0.1,
+          maxScale: 100,
           child: Stack(
             children: <Widget>[
                   Container(
@@ -90,7 +92,9 @@ class _EditorState extends State<Editor> {
         // open file picker
         FilePickerResult? result = await FilePicker.platform.pickFiles();
         if (result != null) {
-          var image = Image.file(File(result.files.first.path.toString()));
+          var image = Image.file(
+            File(result.files.first.path.toString()),
+          );
           var img = CustomImage(
             id: tree.length,
             editor: widget,
