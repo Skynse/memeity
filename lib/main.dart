@@ -25,10 +25,11 @@ class MainView extends StatelessWidget {
       title: 'Memeity',
       theme: ThemeData(
         // dark theme
+        brightness: Brightness.dark,
         iconTheme: const IconThemeData(
-          color: Color.fromARGB(255, 206, 11, 95),
+          color: Colors.black,
         ),
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Row(children: [

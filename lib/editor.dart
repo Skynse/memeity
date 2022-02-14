@@ -35,7 +35,8 @@ class _EditorState extends State<Editor> {
           child: Stack(
             children: <Widget>[
                   Container(
-                    color: Color.fromARGB(255, 49, 49, 49),
+                    //neumorphic effect,
+                    color: Colors.grey[900],
                     child: GridPaper(
                       color: Colors.grey,
                       interval: 200,
@@ -62,7 +63,12 @@ class _EditorState extends State<Editor> {
   void addTool(Tools tool, pos) async {
     switch (tool) {
       case Tools.text:
-        var field = TextButton(onPressed: () {}, child: Text("TEXT HERE"));
+        var field = TextButton(
+            onPressed: () {},
+            child: Text(
+              "TEXT HERE",
+              style: TextStyle(color: Color.fromARGB(255, 70, 70, 70)),
+            ));
         var txt = CustomText(
           id: tree.length,
           editor: this.widget,

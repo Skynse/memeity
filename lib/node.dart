@@ -1,32 +1,11 @@
 import 'package:flutter/material.dart';
 import 'editor.dart';
 import 'toolbar.dart';
+import 'package:resizable_widget/resizable_widget.dart';
 
 // ignore: must_be_immutable
 mixin showProperties {
-  void showPopup(BuildContext context, Node widget) {
-    showMenu(
-      color: Color.fromARGB(255, 155, 155, 155),
-      context: context,
-      position: RelativeRect.fromLTRB(
-        widget.pos.globalPosition.dx,
-        widget.pos.globalPosition.dy,
-        widget.pos.globalPosition.dx,
-        widget.pos.globalPosition.dy,
-      ),
-      items: [
-        PopupMenuItem(
-          child: Text('Delete'),
-          value: 'delete',
-          onTap: () {},
-        ),
-        PopupMenuItem(
-          child: Text('Edit'),
-          value: 'edit',
-        ),
-      ],
-    );
-  }
+  void showPopup(BuildContext context, Node widget) {}
   // create a map of all the properties of the widget
 }
 
@@ -63,37 +42,58 @@ class _NodeState extends State<Node> with showProperties {
     widget.tree[widget.id] = this.widget;
   }
 
-  void deleteSelf() {
-    setState(() {
-      widget.tree.remove(widget.id);
-    });
+  void dispose() {
+    widget.tree.remove(widget.id);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          left: widget.offset.dx,
-          top: widget.offset.dy,
-          child: GestureDetector(
-            child: widget.child,
-            onDoubleTap: () {
-              // get mouse position
-              showPopup(context, widget);
-            },
-            onPanUpdate: (details) {
-              if (widget.toolbar.selectedTool == Tools.select) {
-                setState(() {
-                  widget.offset = Offset(widget.offset.dx + details.delta.dx,
-                      widget.offset.dy + details.delta.dy);
-                });
-              }
-            },
-          ),
+    return Stack(children: [
+      Positioned(
+        left: widget.offset.dx,
+        top: widget.offset.dy,
+        child: GestureDetector(
+          child: widget.child,
+          onDoubleTap: () {
+            // get mouse position
+            showMenu(
+              color: Color.fromARGB(255, 155, 155, 155),
+              context: context,
+              position: RelativeRect.fromLTRB(
+                widget.pos.globalPosition.dx,
+                widget.pos.globalPosition.dy,
+                widget.pos.globalPosition.dx,
+                widget.pos.globalPosition.dy,
+              ),
+              items: [
+                PopupMenuItem(
+                  child: Text('Delete'),
+                  value: 'delete',
+                  onTap: () {
+                    setState(() {
+                      widget.tree.remove(widget.id);
+                    });
+                  },
+                ),
+                const PopupMenuItem(
+                  child: Text('Edit'),
+                  value: 'edit',
+                ),
+              ],
+            );
+          },
+          onPanUpdate: (details) {
+            if (widget.toolbar.selectedTool == Tools.select) {
+              setState(() {
+                widget.offset = Offset(widget.offset.dx + details.delta.dx,
+                    widget.offset.dy + details.delta.dy);
+              });
+            }
+          },
         ),
-      ],
-    );
+      ),
+    ]);
   }
 
   toggleSelect() {
