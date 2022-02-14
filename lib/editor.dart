@@ -9,8 +9,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 
 class Editor extends StatefulWidget {
-  const Editor({Key? key, required this.toolbar, required this.properties})
-      : super(key: key);
+  const Editor({
+    Key? key,
+    required this.toolbar,
+    required this.properties,
+  }) : super(key: key);
   final ToolBar toolbar;
   final PropertiesWindow properties;
 
@@ -21,19 +24,22 @@ class Editor extends StatefulWidget {
 }
 
 class _EditorState extends State<Editor> {
-  final tree = <Widget>[];
+  // create a tree map to store the nodes with id as key
+  Map<int, Node> tree = Map<int, Node>();
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: 500,
-        child: Stack(
-          children: <Widget>[
-                GridPaper(
-                    color: Colors.grey,
-                    interval: 200,
-                    child: GestureDetector(
+        child: InteractiveViewer(
+          child: Stack(
+            children: <Widget>[
+                  Container(
+                    color: Color.fromARGB(255, 49, 49, 49),
+                    child: GridPaper(
+                      color: Colors.grey,
+                      interval: 200,
+                      child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         child: Container(),
                         onTapUp: (pos) {
@@ -41,9 +47,13 @@ class _EditorState extends State<Editor> {
                             var tool = widget.toolbar.selectedTool;
                             addTool(tool, pos);
                           });
-                        }))
-              ] +
-              tree,
+                        },
+                      ),
+                    ),
+                  ),
+                ] +
+                tree.entries.map((e) => e.value).toList(),
+          ),
         ),
       ),
     );
@@ -52,17 +62,17 @@ class _EditorState extends State<Editor> {
   void addTool(Tools tool, pos) async {
     switch (tool) {
       case Tools.text:
-        var field = TextButton(
-          onPressed: () {},
-          child: const Text("Text"),
-        );
+        var field = TextButton(onPressed: () {}, child: Text("TEXT HERE"));
         var txt = CustomText(
+          id: tree.length,
           editor: this.widget,
           pos: pos,
-          child: field,
+          child: field as Widget,
+          tree: tree,
           toolbar: widget.toolbar,
         );
-        tree.add(txt);
+        tree.addEntries([MapEntry(txt.id, txt)]);
+        print(tree);
         break;
       case Tools.none:
         // ignore: avoid_print
@@ -76,12 +86,14 @@ class _EditorState extends State<Editor> {
         if (result != null) {
           var image = Image.file(File(result.files.first.path.toString()));
           var img = CustomImage(
-            editor: this.widget,
+            id: tree.length,
+            editor: widget,
             pos: pos,
             child: image,
+            tree: tree,
             toolbar: widget.toolbar,
           );
-          tree.add(img);
+          tree.addEntries([MapEntry(img.id, img)]);
         }
         break;
       case Tools.select:
