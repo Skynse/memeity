@@ -17,7 +17,6 @@ class MainView extends StatelessWidget {
     PropertiesWindow properties = PropertiesWindow();
     Editor editor = Editor(
       toolbar: toolbar,
-      properties: properties,
     );
 
     return MaterialApp(
@@ -29,13 +28,13 @@ class MainView extends StatelessWidget {
         iconTheme: const IconThemeData(
           color: Colors.black,
         ),
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Row(children: [
         Expanded(
           child: Column(children: <Widget>[
-            toolbar,
+            Padding(padding: const EdgeInsets.all(8), child: toolbar),
             editor,
           ]),
         ),

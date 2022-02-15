@@ -9,7 +9,7 @@ class PropertiesWindow extends StatefulWidget {
   @override
   _PropertiesWindowState createState() => _PropertiesWindowState();
 
-  void setSelectedWidget(Node widget) {}
+  void setSelectedWidget(Widget widget) {}
 }
 
 class _PropertiesWindowState extends State<PropertiesWindow> {

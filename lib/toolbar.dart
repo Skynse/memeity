@@ -57,7 +57,9 @@ class _ToolBarState extends State<ToolBar> {
               ],
             ),
             child: ToggleButtons(
+              highlightColor: Color.fromARGB(255, 168, 118, 115),
               borderColor: Colors.transparent,
+              color: Colors.indigo,
               children: const <Widget>[
                 Icon(
                   Icons.text_fields_outlined,

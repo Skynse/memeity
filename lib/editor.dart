@@ -12,10 +12,10 @@ class Editor extends StatefulWidget {
   const Editor({
     Key? key,
     required this.toolbar,
-    required this.properties,
+    this.projectname = "untitled",
   }) : super(key: key);
   final ToolBar toolbar;
-  final PropertiesWindow properties;
+  final String projectname;
 
   void getToolbar() => toolbar;
 
@@ -25,7 +25,13 @@ class Editor extends StatefulWidget {
 
 class _EditorState extends State<Editor> {
   // create a tree map to store the nodes with id as key
-  Map<int, Node> tree = Map<int, Node>();
+  List<Widget> tree = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // add the root nod
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +55,14 @@ class _EditorState extends State<Editor> {
                           setState(() {
                             var tool = widget.toolbar.selectedTool;
                             addTool(tool, pos);
+                            print('adding tool');
                           });
                         },
                       ),
                     ),
                   ),
                 ] +
-                tree.entries.map((e) => e.value).toList(),
+                tree,
           ),
         ),
       ),
@@ -65,26 +72,18 @@ class _EditorState extends State<Editor> {
   void addTool(Tools tool, pos) async {
     switch (tool) {
       case Tools.text:
-        var field = TextButton(
-            onPressed: () {},
-            child: Text(
-              "TEXT HERE",
-              style: TextStyle(color: Color.fromARGB(255, 70, 70, 70)),
-            ));
         var txt = CustomText(
           id: tree.length,
-          editor: this.widget,
+          editor: widget,
           pos: pos,
-          child: field as Widget,
           tree: tree,
           toolbar: widget.toolbar,
         );
-        tree.addEntries([MapEntry(txt.id, txt)]);
+        tree.add(txt);
         print(tree);
         break;
       case Tools.none:
         // ignore: avoid_print
-        print("None");
         break;
       case Tools.brush:
         break;
@@ -92,18 +91,15 @@ class _EditorState extends State<Editor> {
         // open file picker
         FilePickerResult? result = await FilePicker.platform.pickFiles();
         if (result != null) {
-          var image = Image.file(
-            File(result.files.first.path.toString()),
-          );
           var img = CustomImage(
             id: tree.length,
             editor: widget,
             pos: pos,
-            child: image,
             tree: tree,
             toolbar: widget.toolbar,
+            path: result.files.first.path.toString(),
           );
-          tree.addEntries([MapEntry(img.id, img)]);
+          tree.add(img);
         }
         break;
       case Tools.select:

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'editor.dart';
@@ -5,45 +7,48 @@ import 'toolbar.dart';
 
 // ignore: must_be_immutable
 mixin showProperties {
-  void showPopup(BuildContext context, Node widget) {}
+  void showPopup(BuildContext context, Widget widget) {}
   // create a map of all the properties of the widget
 }
 
-class Node extends StatefulWidget {
+class Draggable extends StatefulWidget {
   final TapUpDetails pos;
   final Widget child;
+  final int id;
   final ToolBar toolbar;
   final Editor editor;
-  final int id;
-  Map<int, Node> tree;
+  List<Widget> tree;
   Offset offset;
   bool selected;
+  VoidCallback onTap;
 
-  Node({
+  Draggable({
     Key? key,
     required this.pos,
     required this.child,
-    required this.toolbar,
-    required this.editor,
     required this.id,
     required this.tree,
+    required this.editor,
+    required this.toolbar,
+    required this.onTap,
     this.selected = false,
     this.offset = Offset.zero,
   }) : super(key: key);
 
   @override
-  _NodeState createState() => _NodeState();
+  _DraggableState createState() => _DraggableState();
 }
 
-class _NodeState extends State<Node> with showProperties {
+class _DraggableState extends State<Draggable> with showProperties {
   @override
   void initState() {
     super.initState();
-    widget.tree[widget.id] = this.widget;
+    //init ontap function
   }
 
+  @override
   void dispose() {
-    widget.tree.remove(widget.id);
+    widget.tree.removeAt(widget.id);
     super.dispose();
   }
 
@@ -57,31 +62,7 @@ class _NodeState extends State<Node> with showProperties {
           child: widget.child,
           onDoubleTap: () {
             // get mouse position
-            showMenu(
-              color: Color.fromARGB(255, 155, 155, 155),
-              context: context,
-              position: RelativeRect.fromLTRB(
-                widget.pos.globalPosition.dx,
-                widget.pos.globalPosition.dy,
-                widget.pos.globalPosition.dx,
-                widget.pos.globalPosition.dy,
-              ),
-              items: [
-                PopupMenuItem(
-                  child: Text('Delete'),
-                  value: 'delete',
-                  onTap: () {
-                    setState(() {
-                      widget.tree.remove(widget.id);
-                    });
-                  },
-                ),
-                const PopupMenuItem(
-                  child: Text('Edit'),
-                  value: 'edit',
-                ),
-              ],
-            );
+            widget.onTap();
           },
           onPanUpdate: (details) {
             if (widget.toolbar.selectedTool == Tools.select) {
@@ -101,73 +82,211 @@ class _NodeState extends State<Node> with showProperties {
     if (widget.toolbar.selectedTool == Tools.select) {
       setState(() {
         widget.selected = !widget.selected;
-        widget.editor.properties.setSelectedWidget(widget);
       });
     }
   }
 }
 
-class CustomText extends Node {
-  var state = _CustomTextState();
+class CustomText extends StatefulWidget {
+  String text;
+  TapUpDetails pos;
+  Editor editor;
+  ToolBar toolbar;
+  int id;
+  List<Widget> tree;
 
   CustomText({
     Key? key,
-    required TapUpDetails pos,
-    required Widget child,
-    required ToolBar toolbar,
-    required Editor editor,
-    required Map<int, Node> tree,
-    required int id,
-  }) : super(
-          key: key,
-          pos: pos,
-          child: child,
-          toolbar: toolbar,
-          editor: editor,
-          tree: tree,
-          id: id,
-        );
-
-  void onSelected() {}
+    required this.id,
+    this.text = "TEXT GOES HERE",
+    required this.pos,
+    required this.editor,
+    required this.tree,
+    required this.toolbar,
+  }) : super(key: key);
+  @override
+  _CustomTextState createState() => _CustomTextState();
 }
 
-class _CustomTextState extends State<CustomText> with showProperties {
+class _CustomTextState extends State<CustomText> {
+  final controller = TextEditingController();
+  late String text_;
+  @override
+  void initState() {
+    text_ = widget.text;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.tree.removeAt(widget.id);
+    controller.dispose();
+    super.dispose();
+  }
+
+  void updateTexts() {
+    text_ = controller.text;
+  }
+
+  void onTap() {
+    showMenu(
+      color: Color.fromARGB(255, 155, 155, 155),
+      context: context,
+      position: RelativeRect.fromLTRB(
+        widget.pos.globalPosition.dx,
+        widget.pos.globalPosition.dy,
+        widget.pos.globalPosition.dx,
+        widget.pos.globalPosition.dy,
+      ),
+      items: [
+        PopupMenuItem(
+          child: Text('Delete'),
+          value: 'delete',
+          onTap: () {
+            setState(() {
+              widget.tree.remove(widget.id);
+              print(widget.tree);
+            });
+          },
+        ),
+        PopupMenuItem(
+          child: TextField(
+            controller: controller,
+            onChanged: (tex) {
+              setState(() {
+                text_ = controller.text;
+              });
+            },
+            onSubmitted: (value) {
+              print("sub");
+              setState(() {
+                text_ = value;
+              });
+            },
+          ),
+          value: 'edit',
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Node(
+    return Draggable(
       pos: widget.pos,
-      selected: false,
-      toolbar: widget.toolbar,
-      editor: widget.editor,
-      tree: widget.tree,
-      id: widget.id,
-      child: Container(
-        width: 100,
-        height: 100,
-        child: widget.child,
+      onTap: onTap,
+      child: TextButton(
+        onPressed: () {},
+        child: Text(
+          text_,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w400,
+            color: Color.fromARGB(255, 184, 184, 184),
+          ),
+        ),
       ),
+      id: widget.id,
+      tree: widget.tree,
+      editor: widget.editor,
+      toolbar: widget.toolbar,
     );
   }
 }
 
-class CustomImage extends Node with showProperties {
+class CustomImage extends StatefulWidget {
+  TapUpDetails pos;
+  ToolBar toolbar;
+  Editor editor;
+  int id;
+  String path;
+  List<Widget> tree;
+  Offset offset;
+  bool selected;
+  double scale;
+
   CustomImage({
     Key? key,
-    required TapUpDetails pos,
-    required Widget child,
-    required ToolBar toolbar,
-    required Editor editor,
-    required Map<int, Node> tree,
-    required int id,
-  }) : super(
-          key: key,
-          pos: pos,
-          child: child,
-          toolbar: toolbar,
-          editor: editor,
-          tree: tree,
-          id: id,
-        );
+    required this.pos,
+    required this.id,
+    required this.tree,
+    required this.editor,
+    required this.toolbar,
+    required this.path,
+    this.scale = 1.0,
+    this.selected = false,
+    this.offset = Offset.zero,
+  }) : super(key: key);
+  @override
+  _CustomImageState createState() => _CustomImageState();
+}
+
+class _CustomImageState extends State<CustomImage> {
+  late String path_;
+  late double scale_;
+
+  void initState() {
+    path_ = widget.path;
+    scale_ = widget.scale;
+    super.initState();
+  }
+
+  void onTap() {
+    showMenu(
+      color: Color.fromARGB(255, 155, 155, 155),
+      context: context,
+      position: RelativeRect.fromLTRB(
+        widget.pos.globalPosition.dx,
+        widget.pos.globalPosition.dy,
+        widget.pos.globalPosition.dx,
+        widget.pos.globalPosition.dy,
+      ),
+      items: [
+        PopupMenuItem(
+          child: Text('Delete'),
+          value: 'delete',
+          onTap: () {
+            setState(() {
+              //delete widget
+            });
+          },
+        ),
+        const PopupMenuItem(
+          child: Text('Edit'),
+          value: 'edit',
+        ),
+        PopupMenuItem(
+          child: Slider(
+            value: scale_,
+            min: 0.0,
+            max: 1.0,
+            onChanged: (value) {
+              setState(() {
+                scale_ = value;
+              });
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Draggable(
+      pos: widget.pos,
+      onTap: onTap,
+      id: widget.id,
+      child: Image.file(
+        File(path_),
+        width: 100,
+        height: 100,
+      ),
+      tree: widget.tree,
+      editor: widget.editor,
+      toolbar: widget.toolbar,
+    );
+  }
 }
 
 class ResizableWidget extends StatefulWidget {
